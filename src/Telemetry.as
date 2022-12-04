@@ -4,7 +4,17 @@ class Telemetry
     array<float> m_time(2000, 0.0f);
     uint m_dataLength = 0;
     array<Parameter> m_params = {
-        CurrentRaceTime()
+          CurrentLapNumber()
+        , CurrentRaceTime()
+        , CurrentLapTime()
+        , LapStartTime()
+        , IdleDuration()
+        , Position_x()
+        , Position_y()
+        , Position_z()
+        , AimYaw()
+        , AimPitch()
+        , AimRoll()
     };
 
     void Reset()
@@ -22,7 +32,7 @@ class Telemetry
             @player = cast<CSmScriptPlayer>(cast<CSmPlayer>(playground.Players[0]).ScriptAPI);
         }
 
-        if (player !is null)
+        if (player !is null && m_dataLength < m_time.Length)
         {
             m_time[m_dataLength] = timeSec;
 
@@ -33,5 +43,19 @@ class Telemetry
 
             ++m_dataLength;
         }
+    }
+
+    Parameter@ GetParameter(const string&in name)
+    {
+        Parameter@ param = null;
+        for (uint i = 0; i < m_params.Length; ++i)
+        {
+            if (m_params[i].m_name == name)
+            {
+                @param = m_params[i];
+                break;
+            }
+        }
+        return param;
     }
 }
