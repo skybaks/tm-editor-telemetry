@@ -1,7 +1,9 @@
 
+const int MAX_DATA_POINTS = 10000;
+
 class Telemetry
 {
-    array<float> m_time(2000, 0.0f);
+    array<float> m_time(MAX_DATA_POINTS, 0.0f);
     uint m_dataLength = 0;
     array<Parameter> m_params = {
           CurrentLapNumber()

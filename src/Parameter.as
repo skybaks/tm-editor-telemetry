@@ -1,13 +1,11 @@
 
-class Parameter
+abstract class Parameter
 {
     string m_name;
     string m_units;
-    array<float> m_data(2000, 0.0f);
+    array<float> m_data(MAX_DATA_POINTS, 0.0f);
 
-    void CaptureFrame(CSmScriptPlayer@ player, int index)
-    {
-    }
+    void CaptureFrame(CSmScriptPlayer@ player, int index) {}
 }
 
 class CurrentLapNumber : Parameter
