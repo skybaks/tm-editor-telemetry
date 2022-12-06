@@ -5,6 +5,7 @@ abstract class Parameter
     string m_units;
     array<float> m_data(MAX_DATA_POINTS, 0.0f);
 
+    void Calculate(CSmScriptPlayer@ player, const float&in currTime, const float&in prevTime) {}
     void CaptureFrame(CSmScriptPlayer@ player, int index) {}
 }
 
@@ -144,7 +145,7 @@ class AimPitch : Parameter
 
     void CaptureFrame(CSmScriptPlayer@ player, int index) override
     {
-        m_data[index] = float(Math::ToDeg(player.AimPitch));
+        m_data[index] = float(Math::ToDeg(player.AimPitch)) * -1.0f;
     }
 }
 
@@ -551,5 +552,33 @@ class FlyingDistance : Parameter
     void CaptureFrame(CSmScriptPlayer@ player, int index) override
     {
         m_data[index] = float(player.FlyingDistance);
+    }
+}
+
+class FlightPathAngle : Parameter
+{
+    private float m_calcVal;
+
+    FlightPathAngle()
+    {
+        m_name = "FlightPathAngle";
+        m_units = "deg";
+        m_calcVal = 0.0f;
+    }
+
+    void Calculate(CSmScriptPlayer@ player, const float&in currTime, const float&in prevTime) override
+    {
+        float velocityVert = player.Velocity.y;
+        float velocityHorz = Math::Sqrt(Math::Pow(player.Velocity.x, 2.0f) + Math::Pow(player.Velocity.z, 2.0f));
+        m_calcVal = 0.0f;
+        if (velocityHorz > 0.0f)
+        {
+            m_calcVal = Math::ToDeg(Math::Atan(velocityVert / velocityHorz));
+        }
+    }
+
+    void CaptureFrame(CSmScriptPlayer@ player, int index) override
+    {
+        m_data[index] = m_calcVal;
     }
 }

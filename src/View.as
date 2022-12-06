@@ -17,6 +17,7 @@ void RenderInterface()
         g_temp.Resize(g_Telemetry.m_dataLength);
 
         Plot(g_Telemetry.GetParameter("AimPitch"));
+        Plot(g_Telemetry.GetParameter("FlightPathAngle"));
         Plot(g_Telemetry.GetParameter("Position_y"));
         Plot(g_Telemetry.GetParameter("FlyingDistance"));
     }

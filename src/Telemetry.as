@@ -45,6 +45,7 @@ class Telemetry
         , SkiddingDuration()
         , SkiddingDistance()
         , FlyingDistance()
+        , FlightPathAngle()
     };
 
     void Reset()
@@ -68,6 +69,10 @@ class Telemetry
 
             for (uint i = 0; i < m_params.Length; ++i)
             {
+                if (m_dataLength > 0)
+                {
+                    m_params[i].Calculate(player, m_time[m_dataLength], m_time[m_dataLength-1]);
+                }
                 m_params[i].CaptureFrame(player, m_dataLength);
             }
 
