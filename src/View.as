@@ -2,6 +2,8 @@
 const int MAX_DISPLAY_POINTS = 500;
 array<float> g_temp(1);
 int g_seekOffset = 0;
+array<string> g_paramsPlot = { "AimPitch", "FlightPathAngle" };
+array<string> g_paramsTable = { "AimPitch", "FlightPathAngle", "Position_y", "FlyingDistance" };
 
 void Plot(Parameter@ parameter, int parameterOffset)
 {
@@ -22,18 +24,26 @@ void RenderInterface()
         g_seekOffset = UI::SliderInt("Seek", g_seekOffset, 0, sliderMax);
         UI::EndDisabled();
 
-        Parameter@ param1 = g_Telemetry.GetParameter("AimPitch");
-        Parameter@ param2 = g_Telemetry.GetParameter("FlightPathAngle");
-        Plot(param1, g_seekOffset);
-        Plot(param2, g_seekOffset);
-        //Plot(g_Telemetry.GetParameter("Position_y"), g_seekOffset);
-        //Plot(g_Telemetry.GetParameter("FlyingDistance"), g_seekOffset);
+        for (uint plotIndex = 0; plotIndex < g_paramsPlot.Length; ++plotIndex)
+        {
+            Parameter@ param = g_Telemetry.GetParameter(g_paramsPlot[plotIndex]);
+            if (param !is null)
+            {
+                Plot(param, g_seekOffset);
+            }
+        }
 
-        if (UI::BeginTable("ParameterMonitor", 3 /*columns*/))
+        if (UI::BeginTable("ParameterMonitor", g_paramsTable.Length + 1 /*columns*/))
         {
             UI::TableSetupColumn("Time (s)");
-            UI::TableSetupColumn(param1.m_name + " (" + param1.m_units + ")");
-            UI::TableSetupColumn(param2.m_name + " (" + param2.m_units + ")");
+            for (uint tableIndex = 0; tableIndex < g_paramsTable.Length; ++tableIndex)
+            {
+                Parameter@ param = g_Telemetry.GetParameter(g_paramsTable[tableIndex]);
+                if (param !is null)
+                {
+                    UI::TableSetupColumn(param.m_name + " (" + param.m_units + ")");
+                }
+            }
             UI::TableHeadersRow();
 
             for (uint i = 0; i < MAX_DISPLAY_POINTS; ++i)
@@ -48,11 +58,15 @@ void RenderInterface()
                 UI::TableNextColumn();
                 UI::Text(tostring(g_Telemetry.m_time[dataIndex]));
 
-                UI::TableNextColumn();
-                UI::Text(tostring(param1.m_data[dataIndex]));
-
-                UI::TableNextColumn();
-                UI::Text(tostring(param2.m_data[dataIndex]));
+                for (uint tableIndex = 0; tableIndex < g_paramsTable.Length; ++tableIndex)
+                {
+                    Parameter@ param = g_Telemetry.GetParameter(g_paramsTable[tableIndex]);
+                    if (param !is null)
+                    {
+                        UI::TableNextColumn();
+                        UI::Text(tostring(param.m_data[dataIndex]));
+                    }
+                }
             }
 
             UI::EndTable();
