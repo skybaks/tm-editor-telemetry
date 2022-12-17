@@ -15,11 +15,9 @@ void Main()
 {
     @g_Telemetry = Telemetry();
 
-    int timePrev = Time::Now;
     while (true)
     {
         sleep(10);
-        timePrev = Time::Now;
 
         if (IsMapEditor && IsMapTesting)
         {
