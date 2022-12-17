@@ -50,11 +50,10 @@ class Telemetry
 
     void Reset()
     {
-        trace("Reset telemetry");
         m_dataLength = 0;
     }
 
-    void CaptureFrame(CSmArenaClient@ playground, const float&in timeSec)
+    void CaptureFrame(CSmArenaClient@ playground)
     {
         CSmScriptPlayer@ player = null;
         if (playground !is null
@@ -65,7 +64,12 @@ class Telemetry
 
         if (player !is null && m_dataLength < m_time.Length)
         {
-            m_time[m_dataLength] = timeSec;
+            float currentRaceTime = player.CurrentRaceTime / 1000.0f;
+            if (m_dataLength > 0 && currentRaceTime < m_time[m_dataLength-1])
+            {
+                Reset();
+            }
+            m_time[m_dataLength] = currentRaceTime;
 
             for (uint i = 0; i < m_params.Length; ++i)
             {
